@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="my",  # 包名
-    version="0.0.1",  # 当前版本号，后续更新时修改
+    version="1.0.0",  # 当前版本号，后续更新时修改
     author="ZiFan Xv",
     author_email="1738128191@qq.com",
     description="Simplifying Advanced API Access for Data Mining & Machine Learning",
