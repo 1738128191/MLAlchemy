@@ -3,6 +3,12 @@
 基于此，本人在许多优秀第三方库(如pandas、sklearn、seaborn等)的基础上，整合完善了代码流程，开发了第三方库my。可以帮助用户快速方便的完成数据挖掘、
 机器学习建模、自动化调参、可视化、nlp预处理等工作。
 
+## 目录
+- [数据挖掘](#数据挖掘)
+- [机器学习建模](#机器学习建模)
+- [自动化调参](#自动化调参)
+- [nlp预处理](#nlp预处理)
+
 ## 功能注解及参数说明
 my包主要分为四个功能：数据挖掘、机器学习建模、自动化调参、nlp预处理。
 
@@ -164,12 +170,12 @@ plot = my.DataVisualization(df, cat_var=cat_var)
 输出结果如下：由于是批量绘制，这里每种类型的图只展示一种。
 
 由于不同人使用不同的IDE，IDE的背景主题不同会导致图形的颜色，具体使用时可以灵活修改。
-![](D:\pycharmProject\my_package\my\test\output1.png)
-![](D:\pycharmProject\my_package\my\test\output2.png)
-![](D:\pycharmProject\my_package\my\test\output3.png)
-![](D:\pycharmProject\my_package\my\test\output4.png)
-![](D:\pycharmProject\my_package\my\test\output5.png)
-![](D:\pycharmProject\my_package\my\test\output6.png)
+![contents](./my/test/output1.png)
+![contents](./my/test/output2.png)
+![contents](./my/test/output3.png)
+![contents](./my/test/output4.png)
+![contents](./my/test/output5.png)
+![contents](./my/test/output6.png)
 
 类参数:
 
@@ -258,11 +264,6 @@ figsize: tuple。图形大小，默认值(10,10)。
 fmt: str。默认值是'.2f'。用于控制显示的小数位数。
 
 halt: bool。默认值是False。如果设置为True，这只会展示下三角，这在有时候会有用。
-
-
-
-
-
 
 上述功能应该是大多数数据挖掘或机器学习项目中常用到的，但它们只是一个项目的冰山一角。除此之外，你还需要根据不同的项目和场景做很多的预处理工作，这些
 都是无法使用通用代码解决的。对于新人，个人强烈建议学习pandas,matplotlib,seaborn,numpy等python优秀的第三方库，熟练掌握后相信你一定能开发出比
@@ -755,7 +756,7 @@ ml_plot.plot_roc(cmap='copper')
 ml_plot.plot_precision_recall(cmap='copper')
 ```
 输出结果如下:
-![](D:\pycharmProject\my_package\my\test\output8.png)
+![contents](./my/test/output8.png)
 '''
 混淆矩阵可以很好的解释为什么之前采用micro计算四个指标会相等。micro是分别计算每个类别的TP,FP,FN，然后汇总后再求值
 
@@ -769,9 +770,9 @@ accuracy和average这个参数无关，acc=(15+15+13)/45=0.95
 
 micro：ps=TP（总）/[TP（总）+FP（总）]=43/(43+2)=0.955,rs=TP（总）/[TP（总）+FN（总）]=43/45=0.995,f1=2*ps*rs/(ps+rs)=0.955
 '''
-![](D:\pycharmProject\my_package\my\test\output7.png)
-![](D:\pycharmProject\my_package\my\test\output9.png)
-![](D:\pycharmProject\my_package\my\test\output10.png)
+![contents](./my/test/output7.png)
+![contents](./my/test/output9.png)
+![contents](./my/test/output10.png)
 
 类参数:
 y_true: 标签的真实值。
@@ -905,8 +906,8 @@ my.display_wordcloud(neg_text, font_path='simhei.ttf')
 my.plt.title('负面评价')
 ```
 输出结果如下:
-![](D:\pycharmProject\my_package\my\test\output11.png)
-![](D:\pycharmProject\my_package\my\test\output12.png)
+![contents](./my/test/output11.png)
+![contents](./my/test/output12.png)
 参数:
 
 data: str。文本。
