@@ -141,7 +141,7 @@ result: 数据框的统计结果。
 #### 3.DataVisualization
 可视化是数据挖掘中绕不开的话题。虽然对于连续型变量、离散型变量、文本型变量有着不同的可视化方法，但是有一些相似的规律。比如连续型变量经常需要查看
 变量的分布情况，离散型变量需要统计数量等。DataVisualization可以方便的对数据进行批量绘图。当然，如果你需要研究的变量很多很杂，
-建议你自行编写函数进行可视化。
+建议你自行编写函数进行可视化。my包内置了常用的绘图库包括matplotlib,seaborn,plotly,用户可以直接调用。
 ```
 # 选择变量
 num_var = list(iris_df.iloc[:, :-1].columns)
@@ -169,7 +169,7 @@ plot = my.DataVisualization(df, cat_var=cat_var)
 ```
 输出结果如下：由于是批量绘制，这里每种类型的图只展示一种。
 
-由于不同人使用不同的IDE，IDE的背景主题不同会导致图形的颜色，具体使用时可以灵活修改。
+由于不同人使用不同的IDE，IDE的背景主题不同会导致图形的颜色发生变形进而产生色差，具体使用时可以灵活修改。
 ![contents](./my/test/output1.png)
 ![contents](./my/test/output2.png)
 ![contents](./my/test/output3.png)
@@ -231,7 +231,7 @@ palette: str。调色板，默认值是'Set3'，如果hue为None，则这个参�
 figsize: tuple。图形大小，默认值(8,6)
 
 ***注：hue和categorical_variable是不同的。比如你想研究男性和女性周一至周五的工作时长，则工作时长是continuous_variable，
-周一至周五是categorical_variable，hue则是性别***
+周一至周五是categorical_variable，hue则是性别。***
 
 4.count_plot
 
@@ -243,7 +243,7 @@ figsize: tuple。图形大小，默认值(8,6)。
 
 max_categories_for_rotation: int。最大类别数，默认值是10。
 
-rotation_angle: int。默认值是45，如果类别数大于max_categories_for_rotation，则会选择x轴的标签避免重叠。
+rotation_angle: int。默认值是45，如果类别数大于max_categories_for_rotation，则会旋转x轴的标签避免重叠。
 
 color: str。颜色，默认值是g，接受matplotlib的颜色。
 
@@ -263,10 +263,10 @@ figsize: tuple。图形大小，默认值(10,10)。
 
 fmt: str。默认值是'.2f'。用于控制显示的小数位数。
 
-halt: bool。默认值是False。如果设置为True，这只会展示下三角，这在有时候会有用。
+half: bool。默认值是False。如果设置为True，这只会展示下三角，这在有时候会有用。
 
-上述功能应该是大多数数据挖掘或机器学习项目中常用到的，但它们只是一个项目的冰山一角。除此之外，你还需要根据不同的项目和场景做很多的预处理工作，这些
-都是无法使用通用代码解决的。对于新人，个人强烈建议学习pandas,matplotlib,seaborn,numpy等python优秀的第三方库，熟练掌握后相信你一定能开发出比
+上述功能应该是大多数数据挖掘或机器学习项目的前置性工作中常用到的，但它们只是一个项目的冰山一角。除此之外，你还需要根据不同的项目和场景做很多的预处理工作，这些
+都是无法使用通用代码解决的。对于新人，个人强烈建议学习pandas,matplotlib,seaborn,numpy等python优秀的第三方库，熟练掌握后相信你一定能写出比
 我这些更加灵活和通用的代码。
 ### 机器学习建模
 #### 1.cut_data
@@ -312,7 +312,7 @@ total_time = timer.stop()
 print(total_time)
 ```
 #### 4.train_regression_baseline
-机器学习建模时，经常会考虑做交叉验证并采用几个不同的主流指标来评价模型的好坏。train_regression_baseline是一个用来训练baseline模型的函数，
+机器学习建模时，经常会考虑做交叉验证并采用多个的主流指标来评价模型的好坏。train_regression_baseline是一个用来训练baseline模型的函数，
 整合了交叉验证与模型评估的全流程并返回一个存储模型评价指标的数据框或字典。baseline在一个完整项目中有着很重要的地位，直接为后续工作指明了方向。
 如果你的baseline效果很差，应该考虑回过头去完善你的数据预处理和特征工程。
 ```
@@ -367,7 +367,7 @@ n_splits,stratified,shuffle与kf_choice中相同。其实就是在train_regressi
 is_print: bool。默认值是False。是否直接输出结果，如果是则会直接打印，否则返回一个数据框和一个字典，都是存储的评价指标。返回的字典会在调参函数
 中用到。
 
-eval_metrics: Optional[List[callable]]。接受一个是一个列表，存储的是可交互的函数，一般采用sklearn.metrics里的评分函数。针对回归问题，
+eval_metrics: Optional[List[callable]]。接受一个列表，存储的是可交互的函数，一般采用sklearn.metrics里的评分函数。针对回归问题，
 默认计算R2和MSE，用户可以自行添加自己想要的评价指标。
 #### 5.train_classification_baseline
 与train_regression_baseline类似，构建的是分类模型的baseline，默认计算f1分数和auc值。
@@ -510,13 +510,13 @@ ml_method: str。完整的模型名称，通常来用sklearn，如例子中的's
 
 scoring: str。评价指标的名称，配合optimize方法中的eval_metrics使用，一般是eval_metrics的名字，如my.root_mean_squared_error.__name__。
 
-params: dict。调参范围。键是模型的参数。值是一个列表，列表的第一个值参数类型，分为'int','categorical','float'；第二和第三个参数是范围的最
-小值和最大值；针对'int'和'float'可以有第四个参数确定调参的步长，如果不给'int'默认是1，'float'默认是None。具体的params如何定义可参考示例代码。
+params: dict。调参范围。键是模型的参数。值是一个列表，列表的第一个值是参数类型，分为'int','categorical','float'；第二和第三个参数是范围的最
+小值和最大值；针对'int'和'float'可以有第四个参数确定调参的步长，如果不给，'int'默认是1，'float'默认是None。具体的params如何定义可参考示例代码。
 
 方法参数:
 
-实例化之后的optimize方法使用了train_regression_baseline和train_classification_baseline作为组件，因此部分重叠参数，不再赘述。可参考说
-名档-机器学习建模-4、5条。
+实例化之后的optimize方法使用了train_regression_baseline和train_classification_baseline作为组件，因此部分重叠参数，不再赘述。可参考
+机器学习建模——4、5条。
 
 n_trials: int。调参的实验次数，默认是30次。
 
@@ -525,7 +525,7 @@ direction: str。默认值是'maximize'。调参的方向，支持'maximize'和'
 
 timeout: int。默认值600(秒)。调参的时间上限。
 
-eval_metrics: Optional[List[callable]]。默认值是None。该参数和train_regression_baseline，train_classification_baseline中的餐
+eval_metrics: Optional[List[callable]]。默认值是None。该参数和train_regression_baseline，train_classification_baseline中的参
 数一致。只不过调参时应该仅取一个指标作为调参标准，因此列表中只能选择一个评价函数。*该参数必须填写，因为无论是回归还是分类，组件函数会默认计算两个值。*
 
 ##### 更多示例及调参框架中可能出现的问题
@@ -703,7 +703,7 @@ pred_test, pred_test_proba = best_model.get_test_result
 ```
 类参数:
 
-BuildBestModel也是使用前面的组件函数拼接起来的，部分重复参数请参考上面的说明。
+BuildBestModel也是前面的组件函数拼接起来的，部分重复参数请参考上面的说明。
 
 model_params: dict。调参后模型的最佳参数。
 
@@ -819,10 +819,10 @@ plot_micro: 是否绘制微平均后的曲线。默认是False。
 
 cmap: str。颜色映射空间，默认值是'Blues'。
 ### nlp预处理
-nlp领域进行文本预处理是很常见的工作，my包可以方便的完成分词、去除停用词、创建词表、词嵌入、绘制词云图等工作。
+nlp领域进行文本预处理是很常见的工作，my包可以简便的完成分词、去除停用词、创建词表、词嵌入、绘制词云图等工作。
 #### 1.custom_tokenizer
 ```
-# 使用淘宝家电评论数据集进行演示顺便演示如何处理在dataframe中的文本。
+# 使用淘宝家电评论数据集进行示例顺便演示如何处理在dataframe中的文本。
 from my import source as my
 df = my.pd.read_csv(r'D:\pycharmProject\my_package\my\data\Ebusiness.csv')
 df.drop_duplicates(keep='first', inplace=True)
@@ -917,7 +917,7 @@ my.plt.title('负面评价')
 
 data: str。文本。
 
-background_color: str。背景颜色，默认是'white'。*如果使用的是PyCharm一类的编辑器，可能会因为主题背景的设置导致词云图背景是黑色的，导处就好了*
+background_color: str。背景颜色，默认是'white'。*如果使用的是PyCharm一类的编辑器，可能会因为主题背景的设置导致词云图背景是黑色的，导出就好了*
 
 filepath: str。路径名。默认是None，用于导入你的图形外观。词云图默认是方形的，就像示例中一样，可以改变其轮廓，但是需要一个外部图片来说明轮廓是
 什么样子。如果你有这个参数，那函数会自动读入并未词云图添加mask参数。
