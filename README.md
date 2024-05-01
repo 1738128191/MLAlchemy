@@ -756,7 +756,9 @@ ml_plot.plot_roc(cmap='copper')
 ml_plot.plot_precision_recall(cmap='copper')
 ```
 输出结果如下:
+
 ![contents](./my/test/output8.png)
+
 '''
 混淆矩阵可以很好的解释为什么之前采用micro计算四个指标会相等。micro是分别计算每个类别的TP,FP,FN，然后汇总后再求值
 
@@ -770,11 +772,13 @@ accuracy和average这个参数无关，acc=(15+15+13)/45=0.95
 
 micro：ps=TP（总）/[TP（总）+FP（总）]=43/(43+2)=0.955,rs=TP（总）/[TP（总）+FN（总）]=43/45=0.995,f1=2*ps*rs/(ps+rs)=0.955
 '''
+
 ![contents](./my/test/output7.png)
 ![contents](./my/test/output9.png)
 ![contents](./my/test/output10.png)
 
 类参数:
+
 y_true: 标签的真实值。
 
 y_pred: 标签的预测值。
@@ -782,6 +786,7 @@ y_pred: 标签的预测值。
 y_pred_proba: 标签的预测概率，如果存在的话，没有默认是None。
 
 方法参数:
+
 1.learning_curve
 
 model: 实例化的模型。
