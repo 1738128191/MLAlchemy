@@ -168,7 +168,8 @@ class TokenEmbedding:
         # 因此通常会引入一个特殊符号 <unk>（未知词标记）
         # 并为其分配一个随机初始化的词向量，或者在这里的情况下，全部赋值为0的向量。
         # [[0] * len(idx_to_vec[0])] 创建了一个全0的向量，其长度与词汇表中第一个词向量相同。
-        id_to_vec = [[0] * len(id_to_vec[0])]*len(special_tokens) + id_to_vec
+        if special_tokens is not None:
+            id_to_vec = [[0] * len(id_to_vec[0])]*len(special_tokens) + id_to_vec
         return id_to_token, torch.tensor(id_to_vec)
 
     def __getitem__(self, tokens):
