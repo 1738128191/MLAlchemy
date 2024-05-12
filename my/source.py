@@ -18,10 +18,6 @@ from nltk.corpus import stopwords
 from matplotlib import pyplot as plt
 from matplotlib_inline import backend_inline
 from inspect import signature
-import plotly.express as px
-import plotly.graph_objects as go
-import plotly.figure_factory as ff
-from plotly.subplots import make_subplots
 from itertools import chain
 from typing import Optional, List
 import seaborn as sns
@@ -273,44 +269,82 @@ def custom_tokenizer(text: str, language='english', include_punctuation=False, r
 
 class DataVisualization:
     # 用于批量绘制图像
-    def __init__(self, df, num_var=None, cat_var=None):
+    def __init__(self, df, num_var=None, cat_var=None, font_size=12):
         self.df = df
         self.num_var = num_var
         self.cat_var = cat_var
+        self.font_size = font_size
+        if num_var is not None:
+            self.nrows = int(len(self.num_var) / 2) if len(self.num_var) % 2 == 0 else int(len(self.num_var) / 2) + 1
 
     def histogram_plot(self, fig_type='count', hue=None, bins=50, palette="Set3", color='gold',
-                       figsize=(18, 6)):
-        for i in self.num_var:
-            plt.figure(figsize=figsize)
-            sns.histplot(self.df, x=i, stat=fig_type, hue=hue, kde=True, bins=bins,
-                         palette=palette if hue is not None else None, color=color)
-            plt.show()
+                       figsize=(18, 6), jupyter=True, kde=True):
+        def plot():
+            sns.histplot(self.df, x=self.num_var[i], stat=fig_type, hue=hue, kde=kde, bins=bins,
+                              palette=palette if hue is not None else None, color=color)
+            plt.xlabel(self.num_var[i], fontsize=self.font_size)
+            plt.ylabel('Count', fontsize=self.font_size)
+            plt.xticks(fontsize=self.font_size)
+            plt.yticks(fontsize=self.font_size)
+            plt.tight_layout()
+        plt.figure(figsize=figsize)
+        for i in range(len(self.num_var)):
+            plt.subplot(self.nrows, 2, i + 1)
+            if jupyter:
+                plot()
+            else:
+                plot()
+                plt.show()
 
-    def join_plot(self, dependent_variable: str, kind='hex', color='yellow', hue=None, palette="Set3"):
-        for i in self.num_var:
-            sns.jointplot(self.df, x=i, y=dependent_variable, kind=kind, color=color,
-                          hue=hue, palette=palette if hue is not None else None)
-            plt.show()
-
-    def box_plot(self, continuous_variable=None, categorical_variable=None,
-                 classified=False, color='orangered', hue=None, figsize=(6, 4), palette="Set3"):
-        if classified:
-            plt.figure(figsize=figsize)
-            sns.boxenplot(self.df, x=categorical_variable, y=continuous_variable,color=color, hue=hue,
-                          palette=palette if hue is not None else None)
-            plt.show()
+    def join_plot(self, dependent_variable: str, color='yellow', many_points=False):
+        if many_points:
+            for i in self.num_var:
+                sns.jointplot(self.df, x=i, y=dependent_variable, kind='hex', color=color)
+                plt.show()
         else:
             for i in self.num_var:
-                plt.figure(figsize=figsize)
-                sns.boxenplot(self.df, y=i, color=color)
+                sns.jointplot(self.df, x=i, y=dependent_variable, kind='reg', color=color)
+                plt.show()
+
+    def boxen_plot(self, color='orangered', hue=None, figsize=(6, 4), palette="Set3", jupyter=True, width=0.5):
+        def plot():
+            sns.boxenplot(self.df, y=self.num_var[i], color=color, hue=hue,
+                          palette=palette if hue is not None else None, width=width)
+            plt.ylabel(self.num_var[i], fontsize=self.font_size)
+            plt.yticks(fontsize=self.font_size)
+            plt.tight_layout()
+        plt.figure(figsize=figsize)
+        for i in range(len(self.num_var)):
+            plt.subplot(self.nrows, 2, i + 1)
+            if jupyter:
+                plot()
+            else:
+                plot()
+                plt.show()
+
+    def box_plot(self, color='orangered', hue=None, figsize=(6, 4), palette="Set3", jupyter=True, width=0.5):
+        def plot():
+            sns.boxplot(self.df, y=self.num_var[i], color=color, hue=hue,
+                        palette=palette if hue is not None else None, width=width)
+            plt.ylabel(self.num_var[i], fontsize=self.font_size)
+            plt.yticks(fontsize=self.font_size)
+            plt.tight_layout()
+        plt.figure(figsize=figsize)
+        for i in range(len(self.num_var)):
+            plt.subplot(self.nrows, 2, i + 1)
+            if jupyter:
+                plot()
+            else:
+                plot()
                 plt.show()
 
     def count_plot(self, hue=None, palette="Set3", figsize=(8, 6), max_categories_for_rotation=10, rotation_angle=45,
-                   color='g'):
+                   color='g', width=0.5):
         for i in self.cat_var:
             fig, ax = plt.subplots(figsize=figsize)
             # 绘制条形图
-            sns.countplot(data=self.df, x=i, hue=hue, palette=palette if hue is not None else None, color=color)
+            sns.countplot(data=self.df, x=i, hue=hue, palette=palette if hue is not None else None,
+                          color=color, width=width)
             # 添加柱子上方的数字标签
             for p in ax.patches:
                 height = p.get_height()
@@ -536,7 +570,8 @@ class OptunaForLGB:
         self.stopping_rounds = stopping_rounds
 
     def objective(self, trial, custom_params: dict = None, n_splits=10,
-                  stratified=True, shuffle=True, multiclass='ovr', average_f1='micro', average_auc='macro'):
+                  stratified=True, shuffle=True, multiclass='ovr', average_f1='micro',
+                  average_auc='macro', probably_params: dict = None):
         kf = my.kf_choice(n_splits=n_splits, stratified=stratified, shuffle=shuffle)
         cv_score = []
         score = 0
@@ -641,25 +676,31 @@ class OptunaForLGB:
                         else:
                             score = self.eval_metric(y_val, val_pred, average=average_f1)
                     else:
+                        default_kwargs = probably_params
+                        # 过滤出default_kwargs中与当前eval_metric函数参数匹配的部分
+                        metric_params = signature(self.eval_metric).parameters.keys()
+                        relevant_kwargs = {} if probably_params is None else \
+                            {k: v for k, v in default_kwargs.items() if k in metric_params}
                         if self.task_type == 'binary':
-                            score = self.eval_metric(y_val, val_pred) if self.eval_metric else accuracy_score(y_val,
-                                                                                                              val_pred)
+                            score = self.eval_metric(y_val, val_pred, **relevant_kwargs)\
+                                if self.eval_metric else accuracy_score(y_val, val_pred)
                         elif self.task_type == 'multiclass':
-                            score = self.eval_metric(y_val, val_pred) if self.eval_metric else log_loss(y_val, val_pred)
+                            score = self.eval_metric(y_val, val_pred, **relevant_kwargs)\
+                                if self.eval_metric else log_loss(y_val, val_pred)
             cv_score.append(score)
         avg_cv_score = sum(cv_score) / n_splits
         return avg_cv_score
 
     def optimize_lgb(self, n_trials=100, custom_params=None, n_splits=10,
                      stratified=True, shuffle=True, multiclass='ovr', average_f1='micro', average_auc='macro',
-                     timeout=600, level=optuna.logging.WARNING):
+                     timeout=600, probably_params: dict = None):
         time = Timer()
         study = optuna.study.create_study(direction='maximize' if self.task_type == 'binary' else 'minimize')
-        optuna.logging.set_verbosity(level)
         study.optimize(lambda trial: self.objective(trial, custom_params=custom_params,
                                                     n_splits=n_splits, stratified=stratified,
                                                     shuffle=shuffle, multiclass=multiclass,
-                                                    average_f1=average_f1, average_auc=average_auc),
+                                                    average_f1=average_f1, average_auc=average_auc,
+                                                    probably_params=probably_params),
                        n_trials=n_trials, n_jobs=-1, timeout=timeout)
         end_time = time.stop()
         print(f'运行时间: {end_time}秒')
@@ -874,41 +915,6 @@ class PlotForML:
         plt.show()
 
 
-class GeneralRNN(nn.Module):
-    def __init__(self, rnn_type: str, vocab_size, embed_size, hidden_size, num_layers, output_size,
-                 bidirectional=False, dropout=0.3, batch_first=True, **kwargs):
-        # forward方法适用于序列分类任务
-        super(GeneralRNN, self).__init__(**kwargs)
-        self.rnn_type = rnn_type.upper()
-        # 如果rnn_type是这三个中的一个，则继续往下执行
-        assert self.rnn_type in ['RNN', 'LSTM', 'GRU']
-
-        self.embedding = nn.Embedding(vocab_size, embed_size)
-        # 从nn模块里面获取与self.rnn_type相对应的属性
-        rnn = getattr(nn, self.rnn_type)
-        self.rnn = rnn(embed_size, hidden_size, num_layers, bidirectional=bidirectional,
-                       dropout=dropout, batch_first=batch_first)
-        fc_input_size = hidden_size * (2 if bidirectional else 1)
-        self.fc = nn.Linear(fc_input_size, output_size)
-
-    def forward(self, inputs):
-        embedding_x = self.embedding(inputs)
-        if self.rnn_type == 'LSTM':
-            self.rnn.flatten_parameters()
-        y, _ = self.rnn(embedding_x, None)
-        out = self.fc(y[:, -1, :])
-        return out
-
-
-def init_weights(m):
-    if isinstance(m, nn.Linear):
-        nn.init.xavier_uniform_(m.weight)
-    elif isinstance(m, (nn.LSTM, nn.RNN, nn.GRU)):  # 使用 isinstance() 函数和元组
-        for param in m._flat_weights_names:
-            if "weight" in param:
-                nn.init.xavier_uniform_(m._parameters[param])
-
-
 class MakeEmbedding:
     def __init__(self, sentences, window, vector_size, sg, min_count,
                  workers, negative, sample, hs, ns_exponent):
@@ -966,12 +972,10 @@ def display_wordcloud(data, background_color="white", filepath=None, figsize=(12
         mask = None
     wordcloud = WordCloud(background_color=background_color, mask=mask,
                           font_path=font_path, width=width, height=height,
-                          stopwords=stopwords, colormap=colormap, max_words=max_words).generate(data)
+                          stopwords=stopwords, colormap=colormap, max_words=max_words, collocations=False).generate(data)
     plt.figure(figsize=figsize)
     plt.imshow(wordcloud)
     plt.axis("off")
-
-
 
 
 
